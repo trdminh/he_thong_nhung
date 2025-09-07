@@ -20,6 +20,7 @@ int main(){
 	TIM2_Init();
 	while(1)
 	{
+		//task1();
 		task2();
 	}
 }
@@ -27,20 +28,17 @@ int main(){
 
 void TIM2_Init(void)
 {
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
-	
-	TIM_TimeBaseInitTypeDef timer_init;
-	
-	timer_init.TIM_CounterMode = TIM_CounterMode_Up;
-	timer_init.TIM_Period = 0xffff;
-	timer_init.TIM_Prescaler = 72 - 1;
-	 
-	TIM_TimeBaseInit(TIM2,&timer_init);
-	TIM_Cmd(TIM2,ENABLE);
-	
-	
-}
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 
+    TIM_TimeBaseInitTypeDef timer_init;
+    TIM_TimeBaseStructInit(&timer_init);   
+    timer_init.TIM_Prescaler = 72 - 1;     
+    timer_init.TIM_CounterMode = TIM_CounterMode_Up;
+    timer_init.TIM_Period = 0xFFFF;
+    timer_init.TIM_ClockDivision = TIM_CKD_DIV1; 
+    TIM_TimeBaseInit(TIM2, &timer_init);
+    TIM_Cmd(TIM2, ENABLE);
+}
 void GPIO_Config(void)
 {
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
