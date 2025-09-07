@@ -1,4 +1,4 @@
-## Hệ thống nhúng
+# Hệ thống nhúng
 
 ### Bài 1:
 
