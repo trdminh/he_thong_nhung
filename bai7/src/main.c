@@ -1,7 +1,4 @@
 #include "stm32f10x.h"
-#include "stm32f10x_gpio.h"
-#include "stm32f10x_rcc.h"
-#include "stm32f10x_spi.h"
 #include <stdio.h>
 
 #define BMP280_CS_PORT    GPIOA
