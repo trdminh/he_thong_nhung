@@ -49,4 +49,78 @@ Nạp chương trình vào trong kit stm32f103c8t6 bằng phần mềm keilC.
 
 - Chức năng:
     + LED PC13 tự động nhấp nháy với tần số 1Hz (chu kỳ 1 giây).
-    + Sử dụng phép XOR bit để đảo trạng thái của LED (GPIOC->ODR ^= GPIO_Pin_13).
+
+### Bài 5:
+
+Giao tiếp UART với STM32F103C8T6:
+
+- **Cấu hình UART1:** 
+  + Cấu hình GPIO với PA9 (TX) ở chế độ AF_PP và PA10 (RX) ở chế độ IN_FLOATING
+  + Cấu hình USART1 với tốc độ baud 115200, 8 bit dữ liệu, 1 bit stop, không parity
+  + Kích hoạt ngắt USART1 (RXNE) để nhận dữ liệu từ máy tính
+  + Sử dụng NVIC để quản lý ngắt với mức ưu tiên cao
+  
+- **Cấu hình Timer:**
+  + Sử dụng TIM2 với prescaler 72 (tạo xung clock 1MHz) để tạo hàm delay chính xác
+  
+- **Chức năng chính:**
+  + Gửi chuỗi "Hello from STM32!" định kỳ qua UART mỗi giây
+  + Nhận dữ liệu từ máy tính qua ngắt UART
+  + Hỗ trợ đọc và xử lý buffer dữ liệu nhận được
+  + Hiển thị dữ liệu qua terminal serial trên máy tính
+
+### Bài 6:
+Sơ đồ cảm biến BMP280
+![Sơ đồ chân cảm biến BMP 280](img/bmp280.jpg)
+Datasheet của BMP280: [datasheet](doc/bst-bmp280-ds001.pdf)
+Đọc cảm biến BMP280 qua giao tiếp I2C1 (PB6: SCL, PB7: SDA):
+
+- **Cấu hình I2C1:**
+  + Cấu hình GPIO với PB6 (SCL) và PB7 (SDA) ở chế độ AF_OD (Alternate Function Open Drain)
+  + Cấu hình I2C1 ở chế độ chuẩn với tốc độ 100kHz, địa chỉ slave 0x00, hỗ trợ 7-bit address
+  + Kích hoạt chức năng acknowledge
+
+- **Cấu hình UART:**
+  + Cấu hình USART1 với tốc độ baud 115200 để hiển thị kết quả
+  
+- **Giao tiếp với BMP280:**
+  + Quét địa chỉ I2C để tìm thiết bị (phát hiện BMP280 ở địa chỉ 0x76)
+  + Đọc ID của thiết bị để xác nhận là BMP280 (ID = 0x58)
+  + Đọc các hệ số hiệu chuẩn từ thanh ghi nội (dig_T1, dig_T2, dig_T3)
+  + Cấu hình chế độ đo với oversampling nhiệt độ x1 và mode normal
+  
+- **Xử lý dữ liệu:**
+  + Đọc dữ liệu nhiệt độ thô từ thanh ghi 0xFA, 0xFB, 0xFC
+  + Tính toán nhiệt độ thực tế sử dụng công thức của nhà sản xuất và các hệ số hiệu chuẩn
+  + Hiển thị kết quả nhiệt độ lên UART mỗi giây
+
+### Bài 7:
+
+Đọc cảm biến BMP280 qua giao tiếp SPI:
+
+- **Cấu hình SPI1:**
+  + Cấu hình GPIO với PA5 (SCK), PA6 (MISO), PA7 (MOSI) ở chế độ AF_PP (Alternate Function Push-Pull)
+  + Cấu hình PA4 làm chân CS (Chip Select) ở chế độ Out_PP
+  + Cấu hình SPI1 ở chế độ master, tốc độ prescaler 32, CPOL=Low, CPHA=1Edge
+  + Truyền dữ liệu 8-bit, MSB first
+
+- **Cấu hình UART:**
+  + Cấu hình USART1 với tốc độ baud 115200 để hiển thị kết quả
+
+- **Giao tiếp với BMP280 qua SPI:**
+  + Điều khiển chân CS để chọn thiết bị (Low khi truyền, High khi nghỉ)
+  + Sử dụng bit MSB (0x80) khi đọc thanh ghi và mask (0x7F) khi ghi thanh ghi
+  + Đọc ID của thiết bị để xác nhận là BMP280 (ID = 0x58)
+  + Đọc các hệ số hiệu chuẩn từ thanh ghi nội (dig_T1, dig_T2, dig_T3)
+  + Cấu hình chế độ đo nhiệt độ và mode hoạt động
+
+- **Xử lý dữ liệu:**
+  + Đọc dữ liệu nhiệt độ thô từ các thanh ghi
+  + Tính toán nhiệt độ thực tế sử dụng công thức bù trừ và các hệ số hiệu chuẩn
+  + Hiển thị kết quả nhiệt độ lên UART mỗi giây
+  
+- **So sánh với I2C:**
+  + SPI có tốc độ truyền nhanh hơn, nhưng sử dụng nhiều chân hơn
+  + Cách thức điều khiển riêng biệt cho từng thiết bị thông qua chân CS
+  + Cần thêm xử lý bit đặc biệt khi đọc/ghi thanh ghi
+- Tính toán và hiển thị giá trị nhiệt độ lên máy tính qua UART.
