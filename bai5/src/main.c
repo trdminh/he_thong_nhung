@@ -106,7 +106,6 @@ void Uart_SendStr(char *str){
         Uart_SendChar(*str++);		
     }
 }
-
 void delay1ms(void)
 {
     TIM_SetCounter(TIM2,0);
@@ -127,7 +126,7 @@ void USART1_IRQHandler(void)
     {
         char c = (char)USART_ReceiveData(USART1);
         Uart_SendChar(c);
-        
+     
         if (c == '\r' || c == '\n' || c == '!') 
         {
             rx_buffer[rx_index] = '\0';

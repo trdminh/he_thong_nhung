@@ -20,8 +20,8 @@ int main(){
 	TIM2_Init();
 	while(1)
 	{
-		//task1();
-		task2();
+		task1();
+		//task2();
 	}
 }
 
