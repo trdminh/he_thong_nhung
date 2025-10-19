@@ -18,17 +18,13 @@ void vTaskLED1(void *pvParameters); // 3Hz
 void vTaskLED2(void *pvParameters); // 10Hz
 void vTaskLED3(void *pvParameters); // 25Hz
 
-// Advanced: Single task function with parameters
-typedef struct {
-    uint16_t pin;
-    uint32_t delay_ms;
-} LED_Params;
-
-void vTaskLED(void *pvParameters);
 
 int main(void){
 	
-
+	RCC_DeInit(); // Reset RCC to default state
+	RCC_HSEConfig(RCC_HSE_OFF); // Disable external oscillator
+	RCC_HSICmd(ENABLE); // Use internal oscillator
+	while(RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET); // Wait for HSI ready
 	
 	Led_Init();
 	UART_Init();
@@ -123,4 +119,3 @@ void vTaskLED3(void *pvParameters) {
         vTaskDelay(pdMS_TO_TICKS(20)); // 20ms off
     }
 }
-
